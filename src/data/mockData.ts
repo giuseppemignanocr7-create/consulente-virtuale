@@ -107,6 +107,18 @@ export const mockAtecoList: AtecoCode[] = [
   { code: 'Altre', description: 'Altre attività economiche', coefficient: 0.67 },
 ];
 
+export const mockDVRDocuments = [
+  { id: '1', clientId: '3', clientName: 'Tech Solutions SRL', title: 'DVR Ufficio 2026', riskLevel: 'basso', status: 'firmato', version: '2.0', createdDate: '2024-01-10', reviewDate: '2026-01-10', workersCount: 12 },
+  { id: '2', clientId: '5', clientName: 'Rossi & Neri SNC', title: 'DVR Magazzino e Uffici', riskLevel: 'medio', status: 'completato', version: '1.3', createdDate: '2024-06-01', reviewDate: '2026-06-01', workersCount: 5 },
+  { id: '3', clientId: '8', clientName: 'Paolo Ferrari', title: 'DVR Studio di Ingegneria', riskLevel: 'basso', status: 'bozza', version: '1.0', createdDate: '2026-03-01', reviewDate: '2028-03-01', workersCount: 3 },
+];
+
+export const mockColfWorkers = [
+  { id: '1', clientId: '1', clientName: 'Marco Rossi', fullName: 'Maria Santos', fiscalCode: 'SNTMRA75C42Z611K', nationality: 'Filippina', contractType: 'convivente', hoursPerWeek: 40, level: 'CS', grossSalary: 1650, netSalary: 1280, startDate: '2023-01-01', status: 'attivo' },
+  { id: '2', clientId: '1', clientName: 'Marco Rossi', fullName: 'Anna Kowalski', fiscalCode: 'KWLNNA82A48Z127Q', nationality: 'Polacca', contractType: 'non_convivente', hoursPerWeek: 20, level: 'B', grossSalary: 720, netSalary: 580, startDate: '2024-03-15', status: 'attivo' },
+  { id: '3', clientId: '2', clientName: 'Laura Bianchi', fullName: 'Rosa Mendes', fiscalCode: 'MNDRS80D65Z602P', nationality: 'Brasiliana', contractType: 'non_convivente', hoursPerWeek: 25, level: 'B', grossSalary: 900, netSalary: 720, startDate: '2022-09-01', status: 'attivo' },
+];
+
 export const mockChatHistory = [
   { id: '1', sender: 'user' as const, text: 'Come calcolo i contributi INPS per quest\'anno?', timestamp: '10:32' },
   { id: '2', sender: 'ai' as const, text: 'Sei iscritto alla **Gestione Separata INPS**. Per il 2026 l\'aliquota è **26,07%** sul reddito imponibile.\n\nIl tuo reddito stimato: €72.500 × 78% (coeff. ATECO 62.01) = **€56.550** imponibile\n\nContributi totali: €56.550 × 26,07% = **€14.742,19**\n\n📌 Scadenza acconto (40%): **30/06/2026** → €5.896,88\n📌 Scadenza saldo (60%): **30/11/2026** → €8.845,31\n\n*Rif. Art. 2, c. 26, L. 335/1995*', timestamp: '10:32' },
