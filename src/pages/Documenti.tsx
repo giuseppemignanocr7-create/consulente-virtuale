@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Upload, Shield, Eye, Download, CheckCircle, Clock, FolderOpen, PenTool, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { mockDocuments } from '../data/mockData';
+import { useDocuments } from '../hooks/useDocuments';
 import type { DocumentType } from '../types';
 
 const typeLabel: Record<DocumentType, string> = { fattura: 'Fattura', delega: 'Delega', contratto: 'Contratto', cu: 'Cert. Unica', busta_paga: 'Busta Paga', accertamento: 'Accertamento', dvr: 'DVR', altro: 'Altro' };
@@ -11,10 +11,11 @@ const typeIcon: Record<DocumentType, React.ReactNode> = { fattura: <FileText siz
 export default function Documenti() {
   const [filter, setFilter] = useState<DocumentType | 'tutti'>('tutti');
   const [showSignWizard, setShowSignWizard] = useState(false);
+  const { documents } = useDocuments();
   const [showUpload, setShowUpload] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
-  const filtered = mockDocuments.filter(d => filter === 'tutti' || d.type === filter);
+  const filtered = documents.filter(d => filter === 'tutti' || d.type === filter);
 
   return (
     <div className="space-y-8">
@@ -147,12 +148,12 @@ export default function Documenti() {
       )}
 
       {/* Firma Wizard */}
-      {showSignWizard && <FirmaWizard onClose={() => setShowSignWizard(false)} />}
+      {showSignWizard && <FirmaWizard documents={documents} onClose={() => setShowSignWizard(false)} />}
     </div>
   );
 }
 
-function FirmaWizard({ onClose }: { onClose: () => void }) {
+function FirmaWizard({ onClose, documents }: { onClose: () => void; documents: { id: string; name: string; signed: boolean; uploadedAt: string; size: string }[] }) {
   const [step, setStep] = useState(1);
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
@@ -182,7 +183,7 @@ function FirmaWizard({ onClose }: { onClose: () => void }) {
             <div className="space-y-4 animate-enter">
               <p className="text-sm font-semibold text-slate-900 mb-2">Seleziona documento da firmare</p>
               <div className="space-y-2 max-h-60 overflow-y-auto pr-2 scrollbar-thin">
-                {mockDocuments.filter(d => !d.signed).map(doc => (
+                {documents.filter(d => !d.signed).map(doc => (
                   <label key={doc.id} className="flex items-center gap-4 p-3 border border-slate-200 rounded-xl hover:border-violet-400 hover:bg-violet-50/30 cursor-pointer transition-all group">
                     <input type="radio" name="doc" className="w-4 h-4 text-violet-600 border-slate-300 focus:ring-violet-500" />
                     <div className="flex-1">

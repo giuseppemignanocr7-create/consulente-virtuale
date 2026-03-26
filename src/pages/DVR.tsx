@@ -1,22 +1,20 @@
 import { useState } from 'react';
 import { ShieldCheck, Plus, FileText, CheckCircle, AlertTriangle, Clock, MoreHorizontal, Search, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-const mockDVR = [
-  { id: '1', cliente: 'Rossi & Neri SNC', settore: 'Commercio al dettaglio', dataRedazione: '2024-06-15', dataRevisione: '2026-06-15', status: 'valido', rischi: ['Scivolamento', 'Videoterminali', 'Antincendio'], lavoratori: 4 },
-  { id: '2', cliente: 'Tech Solutions SRL', settore: 'Informatica', dataRedazione: '2023-09-01', dataRevisione: '2025-09-01', status: 'scaduto', rischi: ['Videoterminali', 'Stress lavoro correlato', 'Ergonomia'], lavoratori: 12 },
-  { id: '3', cliente: 'ASD Sportiva Romana', settore: 'Sport e intrattenimento', dataRedazione: '2025-01-10', dataRevisione: '2027-01-10', status: 'valido', rischi: ['Cadute', 'Attrezzature sportive', 'Antincendio'], lavoratori: 6 },
-];
+import { useDVR } from '../hooks/useDVR';
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   valido: { label: 'Valido', color: 'bg-emerald-50 text-emerald-700 border-emerald-100', icon: <CheckCircle size={14} /> },
+  firmato: { label: 'Firmato', color: 'bg-emerald-50 text-emerald-700 border-emerald-100', icon: <CheckCircle size={14} /> },
+  completato: { label: 'Completato', color: 'bg-blue-50 text-blue-700 border-blue-100', icon: <CheckCircle size={14} /> },
   scaduto: { label: 'Scaduto', color: 'bg-rose-50 text-rose-700 border-rose-100', icon: <AlertTriangle size={14} /> },
   bozza: { label: 'In redazione', color: 'bg-amber-50 text-amber-700 border-amber-100', icon: <Clock size={14} /> },
 };
 
 export default function DVR() {
+  const { dvrs, stats } = useDVR();
   const [showNew, setShowNew] = useState(false);
-  const [, setSelected] = useState<typeof mockDVR[0] | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
@@ -45,19 +43,19 @@ export default function DVR() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard 
           label="DVR Gestiti" 
-          value={String(mockDVR.length)} 
+          value={String(stats.total)} 
           icon={<FileText size={20} className="text-indigo-600" />}
           color="text-slate-900" 
         />
         <StatCard 
           label="In Scadenza" 
-          value={String(mockDVR.filter(d => d.status === 'scaduto').length)} 
+          value={String(stats.inScadenza)} 
           icon={<AlertTriangle size={20} className="text-rose-600" />}
           color="text-rose-600" 
         />
         <StatCard 
           label="Conformi" 
-          value={String(mockDVR.filter(d => d.status === 'valido').length)} 
+          value={String(stats.firmati)} 
           icon={<CheckCircle size={20} className="text-emerald-600" />}
           color="text-emerald-600" 
         />
@@ -79,13 +77,13 @@ export default function DVR() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {mockDVR.map(dvr => {
-            const s = statusConfig[dvr.status];
+          {dvrs.map(dvr => {
+            const s = statusConfig[dvr.status] ?? statusConfig.bozza;
             return (
-              <div key={dvr.id} onClick={() => setSelected(dvr)} className="card p-6 hover:border-amber-200 hover:shadow-md transition-all cursor-pointer group flex flex-col h-full">
+              <div key={dvr.id} onClick={() => setSelectedId(dvr.id)} className={`card p-6 hover:border-amber-200 hover:shadow-md transition-all cursor-pointer group flex flex-col h-full ${selectedId === dvr.id ? 'border-amber-300 shadow-md' : ''}`}>
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-orange-100">
-                    {dvr.cliente.charAt(0)}
+                    {(dvr.clientName ?? dvr.title).charAt(0)}
                   </div>
                   <button onClick={(e) => { e.stopPropagation(); toast('Opzioni DVR', { icon: '⚙️' }); }} className="text-slate-300 hover:text-slate-600 transition-colors">
                     <MoreHorizontal size={20} />
@@ -93,29 +91,25 @@ export default function DVR() {
                 </div>
                 
                 <div className="flex-1">
-                  <h4 className="font-bold text-slate-900 dark:text-white mb-1 group-hover:text-amber-700 transition-colors">{dvr.cliente}</h4>
-                  <p className="text-xs text-slate-500 font-medium mb-4">{dvr.settore}</p>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-1 group-hover:text-amber-700 transition-colors">{dvr.clientName ?? dvr.title}</h4>
+                  <p className="text-xs text-slate-500 font-medium mb-4">{dvr.title}</p>
                   
                   <div className="flex items-center gap-2 mb-4">
                     <span className={`flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wide border ${s.color}`}>
                       {s.icon} {s.label}
                     </span>
                     <span className="text-xs text-slate-500 font-medium bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
-                      👷 {dvr.lavoratori} lav.
+                      👷 {dvr.workersCount ?? '—'} lav.
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-1.5 mb-6">
-                    {dvr.rischi.map(r => (
-                      <span key={r} className="text-[10px] font-medium bg-slate-50 text-slate-600 px-2 py-1 rounded-md border border-slate-100">
-                        {r}
-                      </span>
-                    ))}
+                    <span className="text-[10px] font-medium bg-slate-50 text-slate-600 px-2 py-1 rounded-md border border-slate-100">v{dvr.version}</span>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-slate-50 flex items-center justify-between mt-auto">
-                  <p className="text-xs text-slate-400 font-medium">Rev. {dvr.dataRevisione}</p>
+                  <p className="text-xs text-slate-400 font-medium">Rev. {dvr.reviewDate}</p>
                   <div className="flex gap-2">
                     <button onClick={(e) => { e.stopPropagation(); toast('Anteprima DVR aperta', { icon: '📄' }); }} className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
                       <FileText size={18} />

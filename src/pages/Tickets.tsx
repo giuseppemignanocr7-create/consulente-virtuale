@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, MessageSquare, Clock, CheckCircle, AlertCircle, Send, User, MoreHorizontal, Paperclip } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { mockTickets } from '../data/mockData';
+import { useTickets } from '../hooks/useTickets';
 import type { Ticket } from '../types';
 
 const priorityColor: Record<string, string> = { bassa: 'bg-slate-100 text-slate-600', media: 'bg-amber-50 text-amber-700', alta: 'bg-orange-50 text-orange-700', urgente: 'bg-rose-50 text-rose-700' };
@@ -13,6 +13,7 @@ const statusConfig: Record<string, { color: string; icon: React.ReactNode }> = {
 const catLabel: Record<string, string> = { fiscale: '📊 Fiscale', contributivo: '🏦 Contributivo', lavoro: '👔 Lavoro', societario: '🏢 Societario', altro: '📎 Altro' };
 
 export default function Tickets() {
+  const { tickets } = useTickets();
   const [selected, setSelected] = useState<Ticket | null>(null);
   const [newMsg, setNewMsg] = useState('');
   const [showNew, setShowNew] = useState(false);
@@ -25,14 +26,14 @@ export default function Tickets() {
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Ticket</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{mockTickets.length} richieste</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{tickets.length} richieste</p>
           </div>
           <button onClick={() => setShowNew(true)} className="btn btn-primary p-2.5 rounded-xl shadow-md shadow-indigo-200">
             <Plus size={20} />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-hide">
-          {mockTickets.map(t => {
+          {tickets.map(t => {
             const s = statusConfig[t.status];
             return (
               <div 

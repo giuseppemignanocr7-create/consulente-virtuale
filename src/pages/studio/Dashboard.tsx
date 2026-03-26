@@ -1,6 +1,9 @@
-import { useState } from 'react';
+
 import { Users, CheckSquare, AlertTriangle, MessageSquare, ArrowUpRight, Clock, TrendingUp, MoreHorizontal, Filter } from 'lucide-react';
-import { mockClients, mockTodos, mockDeadlines, mockTickets } from '../../data/mockData';
+import { useTodos } from '../../hooks/useTodos';
+import { useClients } from '../../hooks/useClients';
+import { useDeadlines } from '../../hooks/useDeadlines';
+import { useTickets } from '../../hooks/useTickets';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import toast from 'react-hot-toast';
@@ -25,14 +28,17 @@ const clientiPerPacchetto = [
 
 export default function StudioDashboard() {
   const navigate = useNavigate();
-  const [todos, setTodos] = useState(mockTodos);
+  const { todos, toggle: toggleTodoHook } = useTodos();
+  const { clients } = useClients();
+  const { deadlines } = useDeadlines();
+  const { tickets } = useTickets();
   const pendingTodos = todos.filter(t => !t.completed);
-  const urgentTickets = mockTickets.filter(t => t.priority === 'urgente' || t.priority === 'alta');
-  const urgentDeadlines = mockDeadlines.filter(d => d.urgency !== 'normale' && !d.completed);
+  const urgentTickets = tickets.filter(t => t.priority === 'urgente' || t.priority === 'alta');
+  const urgentDeadlines = deadlines.filter(d => d.urgency !== 'normale' && !d.completed);
 
   const toggleTodo = (id: string) => {
-    setTodos(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
     const todo = todos.find(t => t.id === id);
+    toggleTodoHook(id);
     if (todo && !todo.completed) toast.success(`"${todo.title}" completato`);
   };
 
@@ -43,7 +49,7 @@ export default function StudioDashboard() {
         <StudioKPI 
           icon={<Users size={24} className="text-white" />} 
           iconBg="bg-indigo-500" 
-          value={String(mockClients.length)} 
+          value={String(clients.length)} 
           label="Clienti Attivi" 
           sub="8 attivi, 1 sospeso" 
         />
@@ -64,7 +70,7 @@ export default function StudioDashboard() {
         <StudioKPI 
           icon={<MessageSquare size={24} className="text-white" />} 
           iconBg="bg-amber-500" 
-          value={String(mockTickets.filter(t => t.status !== 'chiuso').length)} 
+          value={String(tickets.filter(t => t.status !== 'chiuso').length)} 
           label="Ticket Aperti" 
           sub={`${urgentTickets.length} alta priorità`} 
         />
@@ -96,7 +102,7 @@ export default function StudioDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {mockClients.map(c => (
+                {clients.map(c => (
                   <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer group" onClick={() => navigate('/clienti')}>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -223,7 +229,7 @@ export default function StudioDashboard() {
             </button>
           </div>
           <div className="space-y-3">
-            {mockTickets.map(t => (
+            {tickets.map(t => (
               <div key={t.id} onClick={() => navigate('/tickets')} className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-indigo-100 dark:hover:border-indigo-900 hover:shadow-sm transition-all bg-white dark:bg-slate-900 cursor-pointer">
                 <div className={`w-2 h-12 rounded-full ${t.priority === 'urgente' ? 'bg-rose-500' : t.priority === 'alta' ? 'bg-amber-500' : 'bg-slate-300'}`}></div>
                 <div className="flex-1 min-w-0">

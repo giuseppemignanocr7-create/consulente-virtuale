@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, Search, Download, Send, Eye, FileText, CheckCircle, XCircle, Clock, AlertCircle, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { mockInvoices } from '../data/mockData';
+import { useInvoices } from '../hooks/useInvoices';
 import type { Invoice, InvoiceStatus } from '../types';
 
 const fmt = (n: number) => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n);
@@ -16,12 +16,13 @@ const statusConfig: Record<InvoiceStatus, { label: string; color: string; icon: 
 };
 
 export default function Fatturazione() {
+  const { invoices } = useInvoices();
   const [tab, setTab] = useState<'emesse' | 'ricevute'>('emesse');
   const [search, setSearch] = useState('');
   const [showWizard, setShowWizard] = useState(false);
   const [selectedInv, setSelectedInv] = useState<Invoice | null>(null);
 
-  const filtered = mockInvoices.filter(i =>
+  const filtered = invoices.filter(i =>
     (tab === 'emesse' ? i.type === 'emessa' : i.type === 'ricevuta') &&
     (i.recipientName.toLowerCase().includes(search.toLowerCase()) || i.number.toLowerCase().includes(search.toLowerCase()))
   );

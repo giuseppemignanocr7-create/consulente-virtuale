@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Search, Plus, Mail, Phone, ExternalLink, Filter } from 'lucide-react';
-import { mockClients } from '../../data/mockData';
+import { useClients } from '../../hooks/useClients';
 import type { Client } from '../../types';
 import toast from 'react-hot-toast';
 
@@ -9,10 +9,11 @@ const packageColor: Record<string, string> = { forfettario: 'bg-blue-50 text-blu
 
 export default function Clienti() {
   const [search, setSearch] = useState('');
+  const { clients } = useClients();
   const [filter, setFilter] = useState('tutti');
   const [selected, setSelected] = useState<Client | null>(null);
 
-  const filtered = mockClients.filter(c => {
+  const filtered = clients.filter(c => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.vatNumber.includes(search);
     const matchFilter = filter === 'tutti' || c.packageType === filter;
     return matchSearch && matchFilter;

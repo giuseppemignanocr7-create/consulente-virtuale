@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Bell, Menu, Bot, Search, Sun, Moon, Settings, LogOut, User, ChevronRight, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { mockAINotifications } from '../data/mockData';
+import { useNotifications } from '../hooks/useNotifications';
 import toast from 'react-hot-toast';
 
 const titles: Record<string, string> = {
@@ -29,11 +29,9 @@ export default function Header() {
 
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notifications, setNotifications] = useState(mockAINotifications);
+  const { notifications, unreadCount: unreadNotifs, markRead: markReadHook, markAllRead: markAllReadHook } = useNotifications();
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-
-  const unreadNotifs = notifications.filter(n => !n.read).length;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -46,13 +44,11 @@ export default function Header() {
   }, []);
 
   const markAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    markAllReadHook();
     toast.success('Tutte le notifiche segnate come lette');
   };
 
-  const markRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-  };
+  const markRead = (id: string) => { markReadHook(id); };
 
   const handleLogout = () => {
     setProfileOpen(false);

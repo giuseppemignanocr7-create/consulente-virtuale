@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { Plus, Baby, Euro, Calendar, FileText, User, CreditCard, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useColf } from '../hooks/useColf';
 
 const fmt = (n: number) => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n);
-
-const mockColf = [
-  { id: '1', nome: 'Maria Esposito', datore: 'Tech Solutions SRL', livello: 'BS', ore: 30, retribuzione: 9.45, startDate: '2024-03-01', stato: 'attivo' },
-  { id: '2', nome: 'Ana Popescu', datore: 'Famiglia Rossi', livello: 'CS', ore: 20, retribuzione: 8.75, startDate: '2023-09-15', stato: 'attivo' },
-];
 
 const mockBuste = [
   { id: '1', lavoratore: 'Maria Esposito', mese: 'Marzo 2026', oreLavorate: 130, lordo: 1228.50, contributiInps: 282.56, netto: 945.94, stato: 'calcolata' },
@@ -16,6 +12,7 @@ const mockBuste = [
 ];
 
 export default function Colf() {
+  const { workers } = useColf();
   const [tab, setTab] = useState<'lavoratori' | 'buste' | 'adempimenti'>('lavoratori');
   const [showNew, setShowNew] = useState(false);
 
@@ -54,27 +51,27 @@ export default function Colf() {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockColf.map(c => (
+            {workers.map(c => (
               <div key={c.id} className="card p-6 hover:border-indigo-200 transition-all group">
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-emerald-100">
-                      {c.nome.charAt(0)}
+                      {(c.fullName ?? '?').charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg text-slate-900 group-hover:text-emerald-700 transition-colors">{c.nome}</h3>
-                      <p className="text-sm text-slate-500">{c.datore}</p>
+                      <h3 className="font-bold text-lg text-slate-900 group-hover:text-emerald-700 transition-colors">{c.fullName}</h3>
+                      <p className="text-sm text-slate-500">{c.clientName}</p>
                     </div>
                   </div>
                   <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-lg font-bold uppercase tracking-wide">
-                    {c.stato}
+                    {c.status}
                   </span>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50/50 p-4 rounded-xl border border-slate-100">
-                  <InfoItem icon={<User size={14} />} label="Livello" value={`Livello ${c.livello}`} />
-                  <InfoItem icon={<Calendar size={14} />} label="Orario" value={`${c.ore} ore/sett`} />
-                  <InfoItem icon={<Euro size={14} />} label="Retribuzione" value={`${fmt(c.retribuzione)}/ora`} />
+                  <InfoItem icon={<User size={14} />} label="Livello" value={`Livello ${c.level}`} />
+                  <InfoItem icon={<Calendar size={14} />} label="Orario" value={`${c.hoursPerWeek} ore/sett`} />
+                  <InfoItem icon={<Euro size={14} />} label="Lordo mensile" value={fmt(c.grossSalary ?? 0)} />
                   <InfoItem icon={<Calendar size={14} />} label="Assunzione" value={c.startDate} />
                 </div>
                 

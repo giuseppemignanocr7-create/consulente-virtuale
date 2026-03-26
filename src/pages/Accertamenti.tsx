@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Upload, Scale, AlertCircle, CheckCircle, Clock, ChevronRight, FileText, ShieldCheck } from 'lucide-react';
-import { mockAssessments } from '../data/mockData';
+import { useAssessments } from '../hooks/useAssessments';
 import type { AssessmentCategory, AssessmentStatus } from '../types';
 import toast from 'react-hot-toast';
 
@@ -18,11 +18,12 @@ const statusConfig: Record<AssessmentStatus, { label: string; color: string; ico
 
 export default function Accertamenti() {
   const [showNew, setShowNew] = useState(false);
+  const { assessments } = useAssessments();
   const [catFilter, setCatFilter] = useState<AssessmentCategory | null>(null);
 
   const filteredAssessments = catFilter 
-    ? mockAssessments.filter(a => a.category === catFilter)
-    : mockAssessments;
+    ? assessments.filter(a => a.category === catFilter)
+    : assessments;
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto">

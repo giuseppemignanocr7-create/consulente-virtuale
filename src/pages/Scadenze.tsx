@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Calendar, CheckCircle, Clock, AlertTriangle, AlertCircle, Bell, CheckSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { mockDeadlines } from '../data/mockData';
+import { useDeadlines } from '../hooks/useDeadlines';
 
 const typeColor: Record<string, string> = { inps: 'bg-blue-50 text-blue-700 border-blue-100', inail: 'bg-purple-50 text-purple-700 border-purple-100', ade: 'bg-orange-50 text-orange-700 border-orange-100', altro: 'bg-slate-50 text-slate-600 border-slate-200' };
 const urgencyConfig = {
@@ -11,11 +11,11 @@ const urgencyConfig = {
 };
 
 export default function Scadenze() {
-  const [deadlines, setDeadlines] = useState(mockDeadlines);
+  const { deadlines, toggleComplete } = useDeadlines();
   const [filter, setFilter] = useState<'tutte' | 'urgenti' | 'completate'>('tutte');
 
   const toggle = (id: string) => {
-    setDeadlines(prev => prev.map(d => d.id === id ? { ...d, completed: !d.completed } : d));
+    toggleComplete(id);
     const dl = deadlines.find(d => d.id === id);
     if (dl && !dl.completed) toast.success(`"${dl.title}" completata`);
   };
