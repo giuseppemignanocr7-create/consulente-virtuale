@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import type { DbInsert } from '../lib/supabase';
 import { mockTickets } from '../data/mockData';
 import type { Ticket } from '../types';
 import toast from 'react-hot-toast';
@@ -26,9 +27,9 @@ export function useTickets(clientId?: string) {
 
   useEffect(() => { fetchTickets(); }, [fetchTickets]);
 
-  const createTicket = async (payload: Partial<Ticket>) => {
+  const createTicket = async (payload: DbInsert<'tickets'>) => {
     if (!isSupabaseConfigured) { toast.success('Ticket aperto con successo!'); return; }
-    const { error } = await supabase.from('tickets').insert([payload as never]);
+    const { error } = await supabase.from('tickets').insert([payload]);
     if (error) toast.error(error.message);
     else { toast.success('Ticket aperto!'); fetchTickets(); }
   };
@@ -36,7 +37,7 @@ export function useTickets(clientId?: string) {
   const updateStatus = async (id: string, status: Ticket['status']) => {
     setTickets(prev => prev.map(t => t.id === id ? { ...t, status } : t));
     if (!isSupabaseConfigured) { toast(`Ticket ${status === 'chiuso' ? 'chiuso' : 'aggiornato'}`, { icon: '🎫' }); return; }
-    const { error } = await supabase.from('tickets').update({ status } as never).eq('id', id);
+    const { error } = await supabase.from('tickets').update({ status }).eq('id', id);
     if (error) { toast.error(error.message); fetchTickets(); }
   };
 

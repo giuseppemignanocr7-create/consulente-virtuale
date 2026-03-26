@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import type { DbInsert, DbUpdate } from '../lib/supabase';
 import { mockColfWorkers } from '../data/mockData';
 import toast from 'react-hot-toast';
 
@@ -19,40 +20,39 @@ export function useColf(clientId?: string) {
     if (clientId) query = query.eq('client_id', clientId);
     const { data, error } = await query;
     if (error) setWorkers(mockColfWorkers);
-    else setWorkers((data ?? []) as typeof mockColfWorkers);
+    else setWorkers((data ?? []) as unknown as typeof mockColfWorkers);
     setLoading(false);
   }, [clientId]);
 
   useEffect(() => { fetchWorkers(); }, [fetchWorkers]);
 
-  const createWorker = async (payload: Record<string, unknown>) => {
+  const createWorker = async (payload: DbInsert<'colf_workers'>) => {
     if (!isSupabaseConfigured) { toast.success('Lavoratore registrato (demo)'); return; }
-    const { error } = await supabase.from('colf_workers').insert([payload as never]);
+    const { error } = await supabase.from('colf_workers').insert([payload]);
     if (error) toast.error(error.message);
     else { toast.success('Lavoratore creato!'); fetchWorkers(); }
   };
 
-  const updateWorker = async (id: string, payload: Record<string, unknown>) => {
+  const updateWorker = async (id: string, payload: DbUpdate<'colf_workers'>) => {
     if (!isSupabaseConfigured) { toast.success('Lavoratore aggiornato (demo)'); return; }
-    const { error } = await supabase.from('colf_workers').update(payload as never).eq('id', id);
+    const { error } = await supabase.from('colf_workers').update(payload).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success('Aggiornato!'); fetchWorkers(); }
   };
 
-  const generatePayslip = async (workerId: string, month: string, year: number, data: Record<string, unknown>) => {
+  const generatePayslip = async (workerId: string, month: string, year: number, data: Partial<DbInsert<'colf_payslips'>>) => {
     if (!isSupabaseConfigured) { toast.success(`Busta paga ${month}/${year} generata (demo)`, { icon: '💰' }); return; }
-    const { error } = await supabase.from('colf_payslips').insert([{ worker_id: workerId, month, year, ...data } as never]);
+    const { error } = await supabase.from('colf_payslips').insert([{ worker_id: workerId, month, year, ...data } as DbInsert<'colf_payslips'>]);
     if (error) toast.error(error.message);
     else toast.success(`Busta paga ${month}/${year} generata!`);
   };
 
-  const terminateWorker = async (id: string, reason?: string) => {
+  const terminateWorker = async (id: string) => {
     if (!isSupabaseConfigured) { toast('Cessazione registrata (demo)', { icon: '📝' }); return; }
     const { error } = await supabase.from('colf_workers').update({
       status: 'cessato',
       end_date: new Date().toISOString().split('T')[0],
-      cessation_reason: reason,
-    } as never).eq('id', id);
+    }).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success('Cessazione registrata'); fetchWorkers(); }
   };

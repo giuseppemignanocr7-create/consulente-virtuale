@@ -18,6 +18,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
+        Relationships: [];
       };
       clients: {
         Row: {
@@ -42,6 +43,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['clients']['Row'], 'id' | 'created_at' | 'updated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['clients']['Insert']>;
+        Relationships: [];
       };
       invoices: {
         Row: {
@@ -68,6 +70,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['invoices']['Row'], 'id' | 'created_at' | 'updated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['invoices']['Insert']>;
+        Relationships: [];
       };
       deadlines: {
         Row: {
@@ -89,6 +92,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['deadlines']['Row'], 'id' | 'created_at' | 'updated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['deadlines']['Insert']>;
+        Relationships: [];
       };
       tickets: {
         Row: {
@@ -106,6 +110,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['tickets']['Row'], 'id' | 'created_at' | 'updated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['tickets']['Insert']>;
+        Relationships: [];
       };
       ticket_messages: {
         Row: {
@@ -120,6 +125,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['ticket_messages']['Row'], 'id' | 'created_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['ticket_messages']['Insert']>;
+        Relationships: [];
       };
       documents: {
         Row: {
@@ -140,6 +146,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['documents']['Row'], 'id' | 'created_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['documents']['Insert']>;
+        Relationships: [];
       };
       todo_items: {
         Row: {
@@ -158,6 +165,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['todo_items']['Row'], 'id' | 'created_at' | 'updated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['todo_items']['Insert']>;
+        Relationships: [];
       };
       tax_assessments: {
         Row: {
@@ -180,6 +188,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['tax_assessments']['Row'], 'id' | 'created_at' | 'updated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['tax_assessments']['Insert']>;
+        Relationships: [];
       };
       chat_messages: {
         Row: {
@@ -196,6 +205,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['chat_messages']['Row'], 'id' | 'created_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['chat_messages']['Insert']>;
+        Relationships: [];
       };
       ai_notifications: {
         Row: {
@@ -213,6 +223,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['ai_notifications']['Row'], 'id' | 'created_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['ai_notifications']['Insert']>;
+        Relationships: [];
       };
       dvr_documents: {
         Row: {
@@ -236,6 +247,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['dvr_documents']['Row'], 'id' | 'created_at' | 'updated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['dvr_documents']['Insert']>;
+        Relationships: [];
       };
       colf_workers: {
         Row: {
@@ -266,6 +278,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['colf_workers']['Row'], 'id' | 'created_at' | 'updated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['colf_workers']['Insert']>;
+        Relationships: [];
       };
       colf_payslips: {
         Row: {
@@ -286,10 +299,12 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['colf_payslips']['Row'], 'id' | 'generated_at'> & { id?: string };
         Update: Partial<Database['public']['Tables']['colf_payslips']['Insert']>;
+        Relationships: [];
       };
     };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
+    Views: { [_ in never]: never };
+    Functions: { [_ in never]: never };
+    Enums: { [_ in never]: never };
+    CompositeTypes: { [_ in never]: never };
   };
 }

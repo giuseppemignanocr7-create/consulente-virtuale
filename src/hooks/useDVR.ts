@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import type { DbInsert } from '../lib/supabase';
 import { mockDVRDocuments } from '../data/mockData';
 import toast from 'react-hot-toast';
 
@@ -19,23 +20,23 @@ export function useDVR(clientId?: string) {
     if (clientId) query = query.eq('client_id', clientId);
     const { data, error } = await query;
     if (error) setDvrs(mockDVRDocuments);
-    else setDvrs((data ?? []) as typeof mockDVRDocuments);
+    else setDvrs((data ?? []) as unknown as typeof mockDVRDocuments);
     setLoading(false);
   }, [clientId]);
 
   useEffect(() => { fetchDVRs(); }, [fetchDVRs]);
 
-  const createDVR = async (payload: Record<string, unknown>) => {
+  const createDVR = async (payload: DbInsert<'dvr_documents'>) => {
     if (!isSupabaseConfigured) { toast.success('DVR generato (demo)'); return; }
-    const { error } = await supabase.from('dvr_documents').insert([payload as never]);
+    const { error } = await supabase.from('dvr_documents').insert([payload]);
     if (error) toast.error(error.message);
     else { toast.success('DVR creato!'); fetchDVRs(); }
   };
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: 'bozza' | 'completato' | 'firmato' | 'scaduto') => {
     setDvrs(prev => prev.map(d => d.id === id ? { ...d, status } : d));
     if (!isSupabaseConfigured) { toast(`DVR ${status}`, { icon: '📋' }); return; }
-    const { error } = await supabase.from('dvr_documents').update({ status } as never).eq('id', id);
+    const { error } = await supabase.from('dvr_documents').update({ status }).eq('id', id);
     if (error) { toast.error(error.message); fetchDVRs(); }
   };
 

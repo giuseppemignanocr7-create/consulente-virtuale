@@ -34,15 +34,20 @@ export function useDocuments(clientId?: string) {
     const path = `documents/${Date.now()}_${file.name}`;
     const { error: uploadErr } = await supabase.storage.from('documents').upload(path, file);
     if (uploadErr) { toast.error(uploadErr.message); return; }
-    const { data: urlData } = supabase.storage.from('documents').getPublicUrl(path);
     const { error } = await supabase.from('documents').insert([{
-      ...metadata,
       name: file.name,
+      type: ((metadata as Record<string, unknown>).type as string) ?? null,
+      client_id: ((metadata as Record<string, unknown>).clientId as string) ?? null,
+      studio_id: null,
+      category: null,
+      signed: false,
+      signed_at: null,
+      signature_id: null,
+      tags: null,
       size_kb: Math.round(file.size / 1024),
       storage_path: path,
-      public_url: urlData.publicUrl,
       uploaded_at: new Date().toISOString(),
-    } as never]);
+    }]);
     if (error) toast.error(error.message);
     else { toast.success('Documento caricato!'); fetchDocuments(); }
   };
@@ -53,7 +58,7 @@ export function useDocuments(clientId?: string) {
       signed: true,
       signed_at: new Date().toISOString(),
       signature_id: `SIG-${Date.now()}`,
-    } as never).eq('id', id);
+    }).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success('Documento firmato digitalmente!'); fetchDocuments(); }
   };

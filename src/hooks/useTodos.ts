@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import type { DbInsert } from '../lib/supabase';
 import { mockTodos } from '../data/mockData';
 import type { TodoItem } from '../types';
 import toast from 'react-hot-toast';
@@ -29,14 +30,14 @@ export function useTodos() {
     setTodos(prev => prev.map(t => t.id === id ? { ...t, completed } : t));
     if (!isSupabaseConfigured) return;
     const { error } = await supabase.from('todo_items')
-      .update({ completed, completed_at: completed ? new Date().toISOString() : null } as never)
+      .update({ completed, completed_at: completed ? new Date().toISOString() : null })
       .eq('id', id);
     if (error) { toast.error(error.message); fetchTodos(); }
   };
 
-  const createTodo = async (payload: Partial<TodoItem>) => {
+  const createTodo = async (payload: DbInsert<'todo_items'>) => {
     if (!isSupabaseConfigured) { toast.success('Todo aggiunto!'); return; }
-    const { error } = await supabase.from('todo_items').insert([payload as never]);
+    const { error } = await supabase.from('todo_items').insert([payload]);
     if (error) toast.error(error.message);
     else { toast.success('Todo creato!'); fetchTodos(); }
   };

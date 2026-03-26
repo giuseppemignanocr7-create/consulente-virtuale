@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import type { DbInsert } from '../lib/supabase';
 import { mockDeadlines } from '../data/mockData';
 import type { Deadline } from '../types';
 import toast from 'react-hot-toast';
@@ -35,14 +36,14 @@ export function useDeadlines(clientId?: string) {
       toast(newCompleted ? 'Scadenza completata' : 'Scadenza riaperta', { icon: newCompleted ? '✅' : '↩️' });
       return;
     }
-    const { error } = await supabase.from('deadlines').update({ completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null } as never).eq('id', id);
+    const { error } = await supabase.from('deadlines').update({ completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null }).eq('id', id);
     if (error) { toast.error(error.message); fetchDeadlines(); }
     else toast(newCompleted ? 'Scadenza completata!' : 'Scadenza riaperta', { icon: newCompleted ? '✅' : '↩️' });
   };
 
-  const createDeadline = async (payload: Partial<Deadline>) => {
+  const createDeadline = async (payload: DbInsert<'deadlines'>) => {
     if (!isSupabaseConfigured) { toast('Demo: scadenza aggiunta (mock)', { icon: '📅' }); return; }
-    const { error } = await supabase.from('deadlines').insert([payload as never]);
+    const { error } = await supabase.from('deadlines').insert([payload]);
     if (error) toast.error(error.message);
     else { toast.success('Scadenza creata!'); fetchDeadlines(); }
   };

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import type { DbInsert, DbUpdate } from '../lib/supabase';
 import { mockInvoices } from '../data/mockData';
 import type { Invoice } from '../types';
 import toast from 'react-hot-toast';
@@ -28,16 +29,16 @@ export function useInvoices(clientId?: string) {
 
   useEffect(() => { fetchInvoices(); }, [fetchInvoices]);
 
-  const createInvoice = async (payload: Partial<Invoice>) => {
+  const createInvoice = async (payload: DbInsert<'invoices'>) => {
     if (!isSupabaseConfigured) { toast('Demo: fattura creata (solo mock)', { icon: '📄' }); return; }
-    const { error: err } = await supabase.from('invoices').insert([payload as never]);
+    const { error: err } = await supabase.from('invoices').insert([payload]);
     if (err) toast.error(err.message);
     else { toast.success('Fattura creata!'); fetchInvoices(); }
   };
 
-  const updateInvoice = async (id: string, payload: Partial<Invoice>) => {
+  const updateInvoice = async (id: string, payload: DbUpdate<'invoices'>) => {
     if (!isSupabaseConfigured) { toast('Demo: aggiornamento simulato', { icon: '✏️' }); return; }
-    const { error: err } = await supabase.from('invoices').update(payload as never).eq('id', id);
+    const { error: err } = await supabase.from('invoices').update(payload).eq('id', id);
     if (err) toast.error(err.message);
     else { toast.success('Fattura aggiornata!'); fetchInvoices(); }
   };

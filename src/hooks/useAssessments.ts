@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import type { DbInsert } from '../lib/supabase';
 import { mockAssessments } from '../data/mockData';
 import type { TaxAssessment } from '../types';
 import toast from 'react-hot-toast';
@@ -29,14 +30,14 @@ export function useAssessments(clientId?: string) {
   const updateStatus = async (id: string, status: TaxAssessment['status']) => {
     setAssessments(prev => prev.map(a => a.id === id ? { ...a, status } : a));
     if (!isSupabaseConfigured) { toast.success('Stato accertamento aggiornato'); return; }
-    const { error } = await supabase.from('tax_assessments').update({ status } as never).eq('id', id);
+    const { error } = await supabase.from('tax_assessments').update({ status }).eq('id', id);
     if (error) { toast.error(error.message); fetchAssessments(); }
     else toast.success('Stato aggiornato');
   };
 
-  const createAssessment = async (payload: Partial<TaxAssessment>) => {
+  const createAssessment = async (payload: DbInsert<'tax_assessments'>) => {
     if (!isSupabaseConfigured) { toast.success('Accertamento caricato (demo)'); return; }
-    const { error } = await supabase.from('tax_assessments').insert([payload as never]);
+    const { error } = await supabase.from('tax_assessments').insert([payload]);
     if (error) toast.error(error.message);
     else { toast.success('Accertamento creato!'); fetchAssessments(); }
   };

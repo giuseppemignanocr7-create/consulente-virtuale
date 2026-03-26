@@ -55,11 +55,15 @@ export function useChat(clientId?: string) {
     setMessages(prev => [...prev, tempMsg]);
     if (!isSupabaseConfigured) { setSending(false); return; }
     const { error } = await supabase.from('chat_messages').insert([{
-      client_id: clientId,
-      sender_role: role,
+      client_id: clientId ?? null,
+      studio_id: null,
+      sender_id: null,
+      sender_name: null,
+      sender_role: (role === 'user' ? 'client' : role) as 'client' | 'studio' | 'ai',
       text,
       is_ai: role === 'ai',
-    } as never]);
+      read_at: null,
+    }]);
     if (error) toast.error(error.message);
     else fetchMessages();
     setSending(false);
