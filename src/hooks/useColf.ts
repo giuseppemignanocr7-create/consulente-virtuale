@@ -27,21 +27,21 @@ export function useColf(clientId?: string) {
 
   const createWorker = async (payload: Record<string, unknown>) => {
     if (!isSupabaseConfigured) { toast.success('Lavoratore registrato (demo)'); return; }
-    const { error } = await supabase.from('colf_workers').insert([payload]);
+    const { error } = await supabase.from('colf_workers').insert([payload as never]);
     if (error) toast.error(error.message);
     else { toast.success('Lavoratore creato!'); fetchWorkers(); }
   };
 
   const updateWorker = async (id: string, payload: Record<string, unknown>) => {
     if (!isSupabaseConfigured) { toast.success('Lavoratore aggiornato (demo)'); return; }
-    const { error } = await supabase.from('colf_workers').update(payload).eq('id', id);
+    const { error } = await supabase.from('colf_workers').update(payload as never).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success('Aggiornato!'); fetchWorkers(); }
   };
 
   const generatePayslip = async (workerId: string, month: string, year: number, data: Record<string, unknown>) => {
     if (!isSupabaseConfigured) { toast.success(`Busta paga ${month}/${year} generata (demo)`, { icon: '💰' }); return; }
-    const { error } = await supabase.from('colf_payslips').insert([{ worker_id: workerId, month, year, ...data }]);
+    const { error } = await supabase.from('colf_payslips').insert([{ worker_id: workerId, month, year, ...data } as never]);
     if (error) toast.error(error.message);
     else toast.success(`Busta paga ${month}/${year} generata!`);
   };
@@ -52,7 +52,7 @@ export function useColf(clientId?: string) {
       status: 'cessato',
       end_date: new Date().toISOString().split('T')[0],
       cessation_reason: reason,
-    }).eq('id', id);
+    } as never).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success('Cessazione registrata'); fetchWorkers(); }
   };

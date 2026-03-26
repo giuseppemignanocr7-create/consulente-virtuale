@@ -29,7 +29,7 @@ export function useAssessments(clientId?: string) {
   const updateStatus = async (id: string, status: TaxAssessment['status']) => {
     setAssessments(prev => prev.map(a => a.id === id ? { ...a, status } : a));
     if (!isSupabaseConfigured) { toast.success('Stato accertamento aggiornato'); return; }
-    const { error } = await supabase.from('tax_assessments').update({ status }).eq('id', id);
+    const { error } = await supabase.from('tax_assessments').update({ status } as never).eq('id', id);
     if (error) { toast.error(error.message); fetchAssessments(); }
     else toast.success('Stato aggiornato');
   };

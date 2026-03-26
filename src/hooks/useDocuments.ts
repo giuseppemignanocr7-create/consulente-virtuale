@@ -53,7 +53,7 @@ export function useDocuments(clientId?: string) {
       signed: true,
       signed_at: new Date().toISOString(),
       signature_id: `SIG-${Date.now()}`,
-    }).eq('id', id);
+    } as never).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success('Documento firmato digitalmente!'); fetchDocuments(); }
   };

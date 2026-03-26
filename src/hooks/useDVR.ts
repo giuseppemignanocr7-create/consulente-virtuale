@@ -27,7 +27,7 @@ export function useDVR(clientId?: string) {
 
   const createDVR = async (payload: Record<string, unknown>) => {
     if (!isSupabaseConfigured) { toast.success('DVR generato (demo)'); return; }
-    const { error } = await supabase.from('dvr_documents').insert([payload]);
+    const { error } = await supabase.from('dvr_documents').insert([payload as never]);
     if (error) toast.error(error.message);
     else { toast.success('DVR creato!'); fetchDVRs(); }
   };
@@ -35,7 +35,7 @@ export function useDVR(clientId?: string) {
   const updateStatus = async (id: string, status: string) => {
     setDvrs(prev => prev.map(d => d.id === id ? { ...d, status } : d));
     if (!isSupabaseConfigured) { toast(`DVR ${status}`, { icon: '📋' }); return; }
-    const { error } = await supabase.from('dvr_documents').update({ status }).eq('id', id);
+    const { error } = await supabase.from('dvr_documents').update({ status } as never).eq('id', id);
     if (error) { toast.error(error.message); fetchDVRs(); }
   };
 

@@ -36,7 +36,7 @@ export function useTickets(clientId?: string) {
   const updateStatus = async (id: string, status: Ticket['status']) => {
     setTickets(prev => prev.map(t => t.id === id ? { ...t, status } : t));
     if (!isSupabaseConfigured) { toast(`Ticket ${status === 'chiuso' ? 'chiuso' : 'aggiornato'}`, { icon: '🎫' }); return; }
-    const { error } = await supabase.from('tickets').update({ status }).eq('id', id);
+    const { error } = await supabase.from('tickets').update({ status } as never).eq('id', id);
     if (error) { toast.error(error.message); fetchTickets(); }
   };
 

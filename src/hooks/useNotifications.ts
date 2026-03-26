@@ -25,13 +25,13 @@ export function useNotifications() {
   const markRead = async (id: string) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     if (!isSupabaseConfigured) return;
-    await supabase.from('ai_notifications').update({ read: true, read_at: new Date().toISOString() }).eq('id', id);
+    await supabase.from('ai_notifications').update({ read: true, read_at: new Date().toISOString() } as never).eq('id', id);
   };
 
   const markAllRead = async () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     if (!isSupabaseConfigured) return;
-    await supabase.from('ai_notifications').update({ read: true, read_at: new Date().toISOString() }).eq('read', false);
+    await supabase.from('ai_notifications').update({ read: true, read_at: new Date().toISOString() } as never).eq('read', false);
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;

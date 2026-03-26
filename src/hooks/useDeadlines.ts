@@ -35,7 +35,7 @@ export function useDeadlines(clientId?: string) {
       toast(newCompleted ? 'Scadenza completata' : 'Scadenza riaperta', { icon: newCompleted ? '✅' : '↩️' });
       return;
     }
-    const { error } = await supabase.from('deadlines').update({ completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null }).eq('id', id);
+    const { error } = await supabase.from('deadlines').update({ completed: newCompleted, completed_at: newCompleted ? new Date().toISOString() : null } as never).eq('id', id);
     if (error) { toast.error(error.message); fetchDeadlines(); }
     else toast(newCompleted ? 'Scadenza completata!' : 'Scadenza riaperta', { icon: newCompleted ? '✅' : '↩️' });
   };

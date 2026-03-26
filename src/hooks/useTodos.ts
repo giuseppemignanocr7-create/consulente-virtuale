@@ -29,7 +29,7 @@ export function useTodos() {
     setTodos(prev => prev.map(t => t.id === id ? { ...t, completed } : t));
     if (!isSupabaseConfigured) return;
     const { error } = await supabase.from('todo_items')
-      .update({ completed, completed_at: completed ? new Date().toISOString() : null })
+      .update({ completed, completed_at: completed ? new Date().toISOString() : null } as never)
       .eq('id', id);
     if (error) { toast.error(error.message); fetchTodos(); }
   };

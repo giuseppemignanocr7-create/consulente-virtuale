@@ -59,7 +59,7 @@ export function useChat(clientId?: string) {
       sender_role: role,
       text,
       is_ai: role === 'ai',
-    }]);
+    } as never]);
     if (error) toast.error(error.message);
     else fetchMessages();
     setSending(false);
